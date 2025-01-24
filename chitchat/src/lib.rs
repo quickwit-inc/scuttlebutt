@@ -7,7 +7,7 @@ mod digest;
 mod failure_detector;
 mod listener;
 mod message;
-pub(crate) mod serialize;
+pub mod serialize;
 mod server;
 mod state;
 pub mod transport;
