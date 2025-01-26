@@ -276,6 +276,8 @@ impl Server {
             .into_iter()
             .filter(|addr| *addr != chitchat_guard.self_chitchat_id().gossip_advertise_addr)
             .collect();
+
+        debug!(peer_nodes=?peer_nodes, live_nodes=?live_nodes, dead_nodes=?dead_nodes, "gossip");
         let (selected_nodes, random_dead_node_opt, random_seed_node_opt) = select_nodes_for_gossip(
             &mut self.rng,
             peer_nodes,
@@ -283,6 +285,7 @@ impl Server {
             dead_nodes,
             seed_nodes,
         );
+        debug!(selected_nodes=?selected_nodes, random_dead_node_opt=?random_dead_node_opt, "selected_nodes");
 
         chitchat_guard.update_self_heartbeat();
         chitchat_guard.gc_keys_marked_for_deletion();
@@ -313,6 +316,7 @@ impl Server {
     /// Gossips with another peer.
     async fn gossip(&mut self, addr: SocketAddr) -> anyhow::Result<()> {
         let syn = self.chitchat.lock().await.create_syn_message();
+        debug!(syn=?syn, addr=?addr, "sending syn to addr");
         self.transport.send(addr, syn).await?;
         Ok(())
     }
